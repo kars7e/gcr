@@ -15,6 +15,18 @@ module GCR
     ignored_fields.concat(fields.map(&:to_s))
   end
 
+  def match_in_order
+    @in_order = true
+  end
+
+  def match_without_order
+    @in_order = false
+  end
+
+  def in_order
+    @in_order || false
+  end
+
   # Fields that are ignored when matching requests.
   #
   # Returns an Array of Strings.

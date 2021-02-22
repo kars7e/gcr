@@ -33,6 +33,11 @@ module Greetings
       )
     end
 
+    def reset(_req, _call)
+      @counter = -1
+      ResetResponse.new
+    end
+
     def increment_counter
       if defined?(@counter)
         @counter += 1

@@ -13,5 +13,9 @@ module Greetings
         request_id: request_id,
       )).greeting
     end
+
+    def self.reset
+      stub.reset(ResetRequest.new)
+    end
   end
 end

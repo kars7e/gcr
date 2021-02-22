@@ -29,8 +29,6 @@ describe GCR do
         expect(Greetings::Client.hello("joe", "1")).to eq("resp 3 — hello joe")
       end
 
-      Greetings::Server.stop
-
       # Play
       subject.with_cassette("foo") do
         expect(Greetings::Client.hello("bob")).to eq("resp 0 — hello bob")
@@ -48,6 +46,47 @@ describe GCR do
         GCR.ignore(:requestId)
 
         expect(Greetings::Client.hello("joe", "2")).to eq("resp 3 — hello joe")
+      end
+    end
+  end
+
+  describe "with_cassette when matchhing in order" do
+    before do
+      subject.match_in_order
+    end
+
+    it 'works when requests match recorded order' do
+      Greetings::Client.reset
+
+      # Record
+      subject.with_cassette("foo") do
+        expect(Greetings::Client.hello("bob")).to eq("resp 0 — hello bob")
+        expect(Greetings::Client.hello("sue")).to eq("resp 1 — hello sue")
+        expect(Greetings::Client.hello("bob")).to eq("resp 2 — hello bob")
+      end
+
+      # Play
+      subject.with_cassette("foo") do
+        expect(Greetings::Client.hello("bob")).to eq("resp 0 — hello bob")
+        expect(Greetings::Client.hello("sue")).to eq("resp 1 — hello sue")
+        expect(Greetings::Client.hello("bob")).to eq("resp 2 — hello bob")
+      end
+    end
+
+    it 'throws exception when requests do not match recorded order' do
+      Greetings::Client.reset
+
+      # Record
+      subject.with_cassette("foo") do
+        expect(Greetings::Client.hello("bob")).to eq("resp 0 — hello bob")
+        expect(Greetings::Client.hello("sue")).to eq("resp 1 — hello sue")
+        expect(Greetings::Client.hello("bob")).to eq("resp 2 — hello bob")
+      end
+
+      # Play
+      subject.with_cassette("foo") do
+        expect(Greetings::Client.hello("bob")).to eq("resp 0 — hello bob")
+        expect { Greetings::Client.hello("bob") }.to raise_error(GCR::NoRecording)
       end
     end
   end

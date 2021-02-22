@@ -5,6 +5,10 @@ require 'google/protobuf'
 
 Google::Protobuf::DescriptorPool.generated_pool.build do
   add_file("greetings.proto", :syntax => :proto3) do
+    add_message "ResetRequest" do
+    end
+    add_message "ResetResponse" do
+    end
     add_message "HelloRequest" do
       optional :request_id, :string, 1
       optional :name, :string, 2
@@ -15,5 +19,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   end
 end
 
-HelloRequest = Google::Protobuf::DescriptorPool.generated_pool.lookup("HelloRequest").msgclass
-HelloResponse = Google::Protobuf::DescriptorPool.generated_pool.lookup("HelloResponse").msgclass
+ResetRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("ResetRequest").msgclass
+ResetResponse = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("ResetResponse").msgclass
+HelloRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("HelloRequest").msgclass
+HelloResponse = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("HelloResponse").msgclass

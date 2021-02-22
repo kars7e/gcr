@@ -51,7 +51,7 @@ class GCR::Cassette
     File.open(@path, "w") do |f|
       f.write(JSON.pretty_generate(
         "version" => VERSION,
-        "reqs"    => reqs,
+        "reqs" => reqs,
       ))
     end
   end
@@ -83,7 +83,7 @@ class GCR::Cassette
       def request_response(*args)
         orig_request_response(*args).tap do |resp|
           req = GCR::Request.from_proto(*args)
-          if GCR.cassette.reqs.none? { |r, _| r == req }
+          if GCR.in_order || GCR.cassette.reqs.none? { |r, _| r == req }
             GCR.cassette.reqs << [req, GCR::Response.from_proto(resp)]
           end
         end
@@ -106,9 +106,15 @@ class GCR::Cassette
 
       def request_response(*args)
         req = GCR::Request.from_proto(*args)
-        GCR.cassette.reqs.each do |other_req, resp|
-          return resp.to_proto if req == other_req
+        if GCR.in_order
+          other_req, resp = GCR.cassette.reqs.shift
+          return resp.to_proto unless other_req.nil? || req != other_req
+        else
+          GCR.cassette.reqs.each do |other_req, resp|
+            return resp.to_proto if req == other_req
+          end
         end
+
         raise GCR::NoRecording
       end
     end

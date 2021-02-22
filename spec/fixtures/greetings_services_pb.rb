@@ -13,7 +13,8 @@ module Greetings
     self.unmarshal_class_method = :decode
     self.service_name = 'Greetings'
 
-    rpc :Hello, HelloRequest, HelloResponse
+    rpc :Hello, ::HelloRequest, ::HelloResponse
+    rpc :Reset, ::ResetRequest, ::ResetResponse
   end
 
   Stub = Service.rpc_stub_class
